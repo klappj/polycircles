@@ -1,5 +1,5 @@
 import unittest
-from polycircles import polycircles
+from polycircle import polycircle
 from nose.tools import assert_equal, assert_almost_equal
 from geopy.distance import vincenty
 from geographiclib import geodesic
@@ -11,10 +11,12 @@ class TestPolycircles(unittest.TestCase):
         self.longitude = 34.792081
         self.radius_meters = 100
         self.number_of_vertices = 36
-        self.vertices = polycircles.circle(latitude=self.latitude,
-                                           longitude=self.longitude,
-                                           radius=self.radius_meters,
-                                           number_of_vertices=self.number_of_vertices)
+        self.polycircle = \
+            polycircle.Polycircle(latitude=self.latitude,
+                                  longitude=self.longitude,
+                                  radius=self.radius_meters,
+                                  number_of_vertices=self.number_of_vertices)
+        self.vertices = self.polycircle.vertices
 
     def test_number_of_vertices(self):
         """Does the number of vertices in the circle match the input?
