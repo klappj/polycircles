@@ -4,7 +4,36 @@ from nose.tools import assert_equal, assert_almost_equal
 from geopy.distance import vincenty
 from geographiclib import geodesic
 
-class TestPolycircles(unittest.TestCase):
+
+class ParametrizedTestCase(unittest.TestCase):
+    """ TestCase classes that want to be parametrized should
+        inherit from this class.
+    """
+    def __init__(self, methodName='runTest',
+                 latitude=None, longitude=None,
+                 radius_meters=None, number_of_vertices=None):
+
+        super(ParametrizedTestCase, self).__init__(methodName)
+        self.latitude = latitude
+        self.longitude = longitude
+        self.radius_meters = radius_meters
+        self.number_of_vertices = number_of_vertices
+
+    @staticmethod
+    def parametrize(testcase_klass, latitude=None, longitude=None,
+                 radius_meters=None, number_of_vertices=None):
+        """ Create a suite containing all tests taken from the given
+            subclass, passing them the parameter 'param'.
+        """
+        testloader = unittest.TestLoader()
+        testnames = testloader.getTestCaseNames(testcase_klass)
+        suite = unittest.TestSuite()
+        for name in testnames:
+            suite.addTest(testcase_klass(name, latitude=None, longitude=None,
+                 radius_meters=None, number_of_vertices=None))
+        return suite
+
+class TestPolycircles(ParametrizedTestCase):
 
     def setUp(self):
         self.latitude = 32.074322
@@ -47,7 +76,10 @@ class TestPolycircles(unittest.TestCase):
 
             assert_almost_equal(expected_azimuth, actual_azimuth, places=5)
 
-#blah
+TestSuite = unittest.TestSuite()
+TestSuite.addTest(ParametrizedTestCase.parametrize(TestPolycircles, latitude=32.074322, longitude=34.792081, radius_meters=100, number_of_vertices=36))
+TestSuite.addTest(ParametrizedTestCase.parametrize(TestPolycircles, latitude=32.074322, longitude=34.792081, radius_meters=100, number_of_vertices=72))
 
 if __name__ == '__main__':
+    unittest.TextTestRunner(verbosity=2).run(suite)
     unittest.main(verbose=2)
